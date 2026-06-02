@@ -35,8 +35,8 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 | 0 | Archaeology & baseline doc | ✅ done |
 | 1 | Dockerize & runnable baseline | ✅ done |
 | 2 | Characterize current behaviour | ✅ done (C-01..C-05 green) |
-| 3 | Impact map | ▶ next |
-| 4 | Data & service layer | ⏳ |
+| 3 | Impact map | ✅ done |
+| 4 | Data & service layer | ▶ next |
 | 5 | UI wiring | ⏳ |
 | 6 | History & loose ends | ⏳ |
 | 7 | Regression & write-up | ⏳ |

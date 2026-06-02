@@ -23,3 +23,14 @@ ADR-001/002/003 (decided design), ADR-004 (proposed, fate of REST DELETE — fin
 Verified wiki claims against code: Asset fields & @SQLDelete/@SQLRestriction (match), endpoint
 tables for AssetController/AssetUIController/AuthController (match), SecurityConfig rules (match),
 Dockerfile/compose topology (match). No drift. Planned pages correctly flagged not-yet-built.
+
+## [2026-06-02] ingest | Phase 3 (impact map) — artifacts/impact-map.md.
+Finalized ADR-004: neutralize REST DELETE /assets/{id} (405), retire UI delete route — no ungated
+soft-delete path remains. Confirmed ADR-002 (plain Long assetId) and ADR-003 (pending badge via one
+findByStatus(PENDING) query). Listed exact new files (DecommissionRequest, DecommissionStatus,
+repository, service, DecommissionUIController, decommissions.html) and edits (assets.html,
+AssetUIController, AssetController). Updated index + overview phase tracker.
+
+## [2026-06-02] lint | Phase 3 code-drift check.
+No new code yet (impact map only). Planned pages still correctly flagged planned; ADR-004 moved
+proposed→current with the recorded decision. Links clean.

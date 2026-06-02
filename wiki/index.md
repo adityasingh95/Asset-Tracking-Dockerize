@@ -57,7 +57,7 @@ Catalog of all pages. `status`: current / draft / planned / proposed / supersede
 | [ADR-001](decisions/ADR-001-reuse-soft-delete.md) | Reuse `@SQLDelete` on approval | current |
 | [ADR-002](decisions/ADR-002-association-style.md) | `assetId` as plain `Long` | current |
 | [ADR-003](decisions/ADR-003-derive-pending-state.md) | Derive "pending" from PENDING request | current |
-| [ADR-004](decisions/ADR-004-rest-delete-fate.md) | Fate of REST `DELETE /assets/{id}` | proposed |
+| [ADR-004](decisions/ADR-004-rest-delete-fate.md) | Neutralize REST `DELETE /assets/{id}` (405) | current |
 | [ADR-005](decisions/ADR-005-test-db-testcontainers.md) | Testcontainers Postgres | current |
 | [ADR-006](decisions/ADR-006-dockerization.md) | Dockerization topology | current |
 | [ADR-007](decisions/ADR-007-reconstructed-baseline.md) | Reconstructed baseline provenance | current |
