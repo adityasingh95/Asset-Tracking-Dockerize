@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Asset Tracking — Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #222;
+            padding: 32px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        .panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        h2 { margin-top: 0; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e3e3ef; }
+        th { font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: .04em; }
+        td[contenteditable="true"] { background: #fffde7; outline: 1px dashed #c9b94a; }
+        .actions a, .actions button {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 6px;
+        }
+        .btn-save { background: #2e7d32; color: #fff; }
+        .btn-edit { background: #1565c0; color: #fff; }
+        .btn-delete { background: #c62828; color: #fff; }
+        form.add-form { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 12px; }
+        form.add-form input {
+            padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;
+        }
+        form.add-form button {
+            padding: 10px 18px; border: none; border-radius: 8px;
+            background: #2d2a55; color: #fff; cursor: pointer;
+        }
+        .logout { color: #fff; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Asset Tracking Dashboard</h1>
+        <form th:action="@{/auth/logout}" method="post" style="margin:0;">
+            <button class="logout" type="submit"
+                    style="background:none;border:none;cursor:pointer;">Logout</button>
+        </form>
+    </header>
+
+    <div class="panel">
+        <h2>Register a new asset</h2>
+        <form class="add-form" th:action="@{/assets-ui/add}" th:object="${newAsset}" method="post">
+            <input type="text" th:field="*{name}" placeholder="Name" required/>
+            <input type="text" th:field="*{type}" placeholder="Type" required/>
+            <input type="text" th:field="*{status}" placeholder="Status"/>
+            <button type="submit">Add Asset</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h2>Active assets</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="asset : ${assets}" th:attr="data-id=${asset.id}">
+                    <td th:text="${asset.id}">1</td>
+                    <td class="cell-name" th:text="${asset.name}">Name</td>
+                    <td class="cell-type" th:text="${asset.type}">Type</td>
+                    <td class="cell-status" th:text="${asset.status}">Status</td>
+                    <td class="actions">
+                        <button type="button" class="btn-edit"
+                                th:attr="onclick=|toggleEdit(${asset.id})|">Edit</button>
+                        <button type="button" class="btn-save" style="display:none;"
+                                th:attr="onclick=|saveEdit(${asset.id})|">Save</button>
+                        <a class="btn-delete" th:href="@{'/assets-ui/delete/' + ${asset.id}}"
+                           onclick="return confirm('Delete this asset?');">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Inline edit: toggle contenteditable cells, then PATCH /assets/{id}
+        function toggleEdit(id) {
+            const row = document.querySelector('tr[data-id="' + id + '"]');
+            row.querySelectorAll('.cell-name, .cell-type, .cell-status')
+               .forEach(c => c.setAttribute('contenteditable', 'true'));
+            row.querySelector('.btn-edit').style.display = 'none';
+            row.querySelector('.btn-save').style.display = 'inline-block';
+        }
+
+        function saveEdit(id) {
+            const row = document.querySelector('tr[data-id="' + id + '"]');
+            const payload = {
+                name: row.querySelector('.cell-name').innerText.trim(),
+                type: row.querySelector('.cell-type').innerText.trim(),
+                status: row.querySelector('.cell-status').innerText.trim()
+            };
+            fetch('/assets/' + id, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(r => {
+                if (!r.ok) throw new Error('Update failed');
+                return r.json();
+            }).then(() => {
+                row.querySelectorAll('.cell-name, .cell-type, .cell-status')
+                   .forEach(c => c.removeAttribute('contenteditable'));
+                row.querySelector('.btn-edit').style.display = 'inline-block';
+                row.querySelector('.btn-save').style.display = 'none';
+            }).catch(err => alert(err.message));
+        }
+    </script>
+</body>
+</html>
