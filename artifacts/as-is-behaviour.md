@@ -1,8 +1,9 @@
 # as-is-behaviour.md  (Phase 0/2)
 
-> Current behaviour of the reconstructed baseline. Phase 0 captures it from reading
-> the code; Phase 2 will re-verify each item with passing characterization tests
-> (C-01..C-05) and runtime smoke checks, and this document will be finalized then.
+> Current behaviour of the reconstructed baseline. **Finalized in Phase 2** — every
+> item below is now backed by a passing characterization test (C-01..C-05, see
+> `characterization-tests.md`) and/or the Phase 1 Docker smoke run
+> (see `regression-result.md`).
 
 ## Login
 - `GET /auth/login` serves `login.html` (permitAll). The form `POST`s to `/auth/login`
@@ -10,20 +11,20 @@
 - Credentials: `admin` / `admin123` (single in-memory user from `application.properties`).
 - On success → redirect to `/assets-ui`. On failure → `/auth/login?error`. Logout via
   `POST /auth/logout` → `/auth/login?logout`.
-- Verification status: **to be confirmed at runtime in Phase 1 (Docker smoke) and Phase 2 (C-05).**
+- Verified: Phase 1 Docker smoke (302→/assets-ui) and C-05 (auth gate).
 
 ## View assets (dashboard)
 - `GET /assets-ui` calls `assetRepository.findAll()` and renders `assets.html`.
 - `@SQLRestriction("is_deleted = false")` is applied to every `Asset` read, so
   soft-deleted assets never appear in the list (no explicit `WHERE is_deleted=false`
   in application code — it is enforced at the ORM level).
-- Verification status: to be confirmed (C-02).
+- Verified: C-02 (soft-deleted assets excluded from reads).
 
 ## Add asset
 - The dashboard "Register a new asset" form `POST`s to `/assets-ui/add`
   (`@ModelAttribute Asset`), which calls `assetRepository.save(...)` and redirects to
   `/assets-ui`. The new asset then appears in the active list.
-- Verification status: to be confirmed (C-04 covers create+list via the REST path).
+- Verified: C-04 (create+list) and Phase 1 smoke (dashboard renders the new asset).
 
 ## Update asset (incl. partial PATCH)
 - Inline edit: the dashboard makes the `name`/`type`/`status` cells `contenteditable`,
@@ -31,7 +32,7 @@
   JSON body.
 - `AssetController.patchAsset` reads a `Map<String,Object>` and only updates the keys
   present (`name`, `type`, `status`), leaving the others intact → genuine partial update.
-- Verification status: to be confirmed (C-03).
+- Verified: C-03 (PATCH changes only the provided field).
 
 ## Delete / decommission (current)
 - Control in `assets.html`: an anchor `<a class="btn-delete" href="/assets-ui/delete/{id}">Delete</a>`
