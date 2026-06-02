@@ -15,10 +15,14 @@ Server-rendered Thymeleaf dashboard. **Primary target of the change.**
 | GET | `/assets-ui` | List active assets + add form (`assets.html`). |
 | POST | `/assets-ui/add` | Save new asset → redirect. |
 | GET | `/assets-ui/edit/{id}` | Edit page (`edit-asset.html`). |
-| GET | `/assets-ui/delete/{id}` | **Soft-delete now; to be re-routed to the request flow (Phase 5).** |
 
-Depends on [persistence](persistence.md) (`AssetRepository`). The delete control in
-`assets.html` is a GET anchor with a `confirm()` dialog. In Phase 5 this becomes
-*Request Decommission* (reason input) routed to the new flow rather than `deleteById`.
+> **Phase 5:** the old `GET /assets-ui/delete/{id}` soft-delete route has been **removed**
+> (now returns 404). Deletion goes through the decommission-approval flow
+> ([decommission-ui-controller](decommission-ui-controller.md)). `listAssets` now also injects
+> `pendingAssetIds` (from `DecommissionService.pendingRequests()`) for the dashboard badge (FA-03).
+
+Depends on [persistence](persistence.md) (`AssetRepository`) and
+[decommission-service](decommission-service.md). In `assets.html` the per-row control is now
+*Request Decommission* (with a required reason input) or a **Pending decommission** badge.
 
 Related: [asset-crud feature](../features/asset-crud.md) · [assets-ui-routes](../apis/assets-ui-routes.md).

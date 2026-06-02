@@ -46,3 +46,15 @@ decidedBy/At, decisionComment) — match. Service API ↔ DecommissionService.ja
 reject/pendingRequests/historyForAsset) — match. Repository finders ↔ code — match. Generated DDL
 matches the entity. Tests: 13 green (C-01..05, N-01..07). features/{request-decommission,
 approval-workflow} correctly still 'planned' (UI not wired). Links clean.
+
+## [2026-06-02] ingest | Phase 5 (UI wiring) — DecommissionUIController, decommissions.html, assets.html, AssetUIController.
+Added approver UI + dashboard request control + pending badge + flash messages. Removed the old
+GET /assets-ui/delete/{id} route (now 404). New component page decommission-ui-controller; flipped
+features/{request-decommission, approval-workflow}, apis/decommission-routes planned→current with
+real paths. Updated asset-ui-controller, assets-ui-routes, index, overview.
+
+## [2026-06-02] lint | Phase 5 code-drift + live check.
+Routes ↔ DecommissionUIController.java (request/approve/reject/list) — match. Templates render under
+MockMvc (n08 + approverView). Live smoke (jar+postgres): request→302+badge, blank reason rejected,
+duplicate blocked with flash, approver view lists reason, approve→asset soft-deleted, old delete
+route → 404. Tests: 17 green (C-01..05, N-01..08). Links clean.

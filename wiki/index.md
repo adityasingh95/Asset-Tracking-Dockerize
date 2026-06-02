@@ -24,8 +24,8 @@ Catalog of all pages. `status`: current / draft / planned / proposed / supersede
 | [asset-crud](features/asset-crud.md) | List/add/view/update assets | current |
 | [authentication](features/authentication.md) | Single-user security model | current |
 | [dockerized-runtime](features/dockerized-runtime.md) | Compose app+db, lifecycle | current |
-| [request-decommission](features/request-decommission.md) | Create pending request (+reason) | planned |
-| [approval-workflow](features/approval-workflow.md) | Approve/reject + audit | planned |
+| [request-decommission](features/request-decommission.md) | Create pending request (+reason) | current |
+| [approval-workflow](features/approval-workflow.md) | Approve/reject + audit | current |
 
 ## Components
 | Page | Summary | Status |
@@ -37,13 +37,14 @@ Catalog of all pages. `status`: current / draft / planned / proposed / supersede
 | [persistence](components/persistence.md) | JPA repository + ddl-auto | current |
 | [docker-compose-stack](components/docker-compose-stack.md) | Dockerfile + compose | current |
 | [decommission-service](components/decommission-service.md) | request/approve/reject logic | current |
+| [decommission-ui-controller](components/decommission-ui-controller.md) | dashboard request + approver UI wiring | current |
 
 ## APIs
 | Page | Summary | Status |
 |---|---|---|
 | [assets-rest-api](apis/assets-rest-api.md) | `/assets` endpoints | current |
 | [assets-ui-routes](apis/assets-ui-routes.md) | Thymeleaf routes | current |
-| [decommission-routes](apis/decommission-routes.md) | request/approve/reject routes | planned |
+| [decommission-routes](apis/decommission-routes.md) | request/approve/reject routes | current |
 
 ## Data models
 | Page | Summary | Status |

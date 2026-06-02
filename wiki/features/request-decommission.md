@@ -1,12 +1,12 @@
 ---
-title: "Feature: Request Decommission (planned)"
-status: planned
+title: "Feature: Request Decommission"
+status: current
 last_updated: 2026-06-02
 sources: [docs/03-change-spec.md, docs/01-overview-and-goals.md]
 phase: 5
 ---
 
-# Feature: Request Decommission (planned — Phases 4/5)
+# Feature: Request Decommission
 
 Replaces the immediate-delete control. Requesting decommission creates a `PENDING`
 [DecommissionRequest](../data-models/decommission-request.md); the asset is **not**
@@ -20,8 +20,7 @@ soft-deleted at this point and shows a pending badge.
 - UI-01/02 — the dashboard *Delete* control becomes *Request Decommission* with a reason input.
 
 ## Status
-- **Service layer landed in Phase 4** (DecommissionService, N-01..N-07 green); user-facing UI wiring is Phase 5.
-Not yet implemented. Service guards land in Phase 4; UI wiring in Phase 5.
+**Implemented (Phase 4 service + Phase 5 UI).** Live-verified: request→pending badge, blank reason rejected, duplicate blocked, approver view, approve→soft-delete, old UI delete route retired (404). Tests N-01..N-08 green.
 
 Related: [approval-workflow](approval-workflow.md) · [decommission-service](../components/decommission-service.md) ·
 [decommission-routes](../apis/decommission-routes.md).

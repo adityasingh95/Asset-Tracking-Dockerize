@@ -37,8 +37,8 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 | 2 | Characterize current behaviour | ✅ done (C-01..C-05 green) |
 | 3 | Impact map | ✅ done |
 | 4 | Data & service layer | ✅ done (N-01..N-07 green) |
-| 5 | UI wiring | ▶ next |
-| 6 | History & loose ends | ⏳ |
+| 5 | UI wiring | ✅ done (N-08 green; live-verified) |
+| 6 | History & loose ends | ▶ next |
 | 7 | Regression & write-up | ⏳ |
 
 > Provenance note: the original source repo (`faizal08/asset-tracking-system`) was
@@ -48,9 +48,9 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 ## Key pages
 - Features: [asset-crud](features/asset-crud.md) · [authentication](features/authentication.md) ·
   [dockerized-runtime](features/dockerized-runtime.md) ·
-  [request-decommission](features/request-decommission.md) (planned) ·
-  [approval-workflow](features/approval-workflow.md) (planned)
+  [request-decommission](features/request-decommission.md) ·
+  [approval-workflow](features/approval-workflow.md)
 - Data models: [asset](data-models/asset.md) · [decommission-request](data-models/decommission-request.md) (planned)
 - APIs: [assets-rest-api](apis/assets-rest-api.md) · [assets-ui-routes](apis/assets-ui-routes.md) ·
-  [decommission-routes](apis/decommission-routes.md) (planned)
+  [decommission-routes](apis/decommission-routes.md)
 - [Glossary](glossary.md) · [Onboarding](onboarding.md) · [Index](index.md) · [Log](log.md)

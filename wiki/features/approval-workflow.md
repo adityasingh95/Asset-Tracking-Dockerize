@@ -1,12 +1,12 @@
 ---
-title: "Feature: Approval Workflow (planned)"
-status: planned
+title: "Feature: Approval Workflow"
+status: current
 last_updated: 2026-06-02
 sources: [docs/03-change-spec.md, docs/04-data-model-spec.md]
 phase: 5
 ---
 
-# Feature: Approval Workflow (planned — Phases 4/5)
+# Feature: Approval Workflow
 
 An approver views pending requests and decides each one, with a full audit trail.
 
@@ -31,8 +31,9 @@ An approver views pending requests and decides each one, with a full audit trail
 ```
 
 ## Status
-- **Service layer landed in Phase 4** (DecommissionService, N-01..N-07 green); user-facing UI wiring is Phase 5.
-Not yet implemented. Service `approve`/`reject` in Phase 4; approver UI in Phase 5;
-history in Phase 6.
+**Implemented (Phase 4 service + Phase 5 UI).** Approver view at `/assets-ui/decommissions` with
+approve/reject + comment; approve reuses the existing soft-delete. Tests N-01..N-08 green and
+live-verified (approve→asset soft-deleted, reject→asset stays active). History surfacing
+(FA-09, incl. approved/soft-deleted assets) is finalized in Phase 6.
 
 Related: [request-decommission](request-decommission.md) · [decommission-service](../components/decommission-service.md).

@@ -15,9 +15,9 @@ phase: "0-2"
 | GET | `/assets-ui` | `assets.html` (list + add form) |
 | POST | `/assets-ui/add` | save → redirect |
 | GET | `/assets-ui/edit/{id}` | `edit-asset.html` |
-| GET | `/assets-ui/delete/{id}` | soft-delete → redirect *(to be re-routed Phase 5)* |
+| ~~GET~~ | ~~`/assets-ui/delete/{id}`~~ | **removed (Phase 5)** — now 404; use the decommission flow |
 
-Planned (Phase 5): the delete route is replaced by a *Request Decommission* POST flow, and
-an approver view is added — see [decommission-routes](decommission-routes.md).
+The delete route was replaced by a *Request Decommission* POST flow + an approver view — see
+[decommission-routes](decommission-routes.md).
 Components: [asset-ui-controller](../components/asset-ui-controller.md) ·
 [auth-controller](../components/auth-controller.md).

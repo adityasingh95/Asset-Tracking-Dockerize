@@ -47,7 +47,17 @@
         }
         .btn-save { background: #2e7d32; color: #fff; }
         .btn-edit { background: #1565c0; color: #fff; }
-        .btn-delete { background: #c62828; color: #fff; }
+        .btn-decommission { background: #c62828; color: #fff; }
+        .reason-input { padding: 5px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; width: 130px; }
+        .badge-pending {
+            display: inline-block; padding: 4px 10px; border-radius: 12px;
+            background: #ff8f00; color: #fff; font-size: 12px; font-weight: 600;
+        }
+        tr.row-pending { background: rgba(255, 143, 0, 0.10); }
+        .flash { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; }
+        .flash-success { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+        .flash-error { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6cb; }
+        .toolbar-link { color: #fff; text-decoration: underline; font-size: 14px; margin-right: 18px; }
         form.add-form { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 12px; }
         form.add-form input {
             padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;
@@ -62,11 +72,17 @@
 <body>
     <header>
         <h1>Asset Tracking Dashboard</h1>
-        <form th:action="@{/auth/logout}" method="post" style="margin:0;">
-            <button class="logout" type="submit"
-                    style="background:none;border:none;cursor:pointer;">Logout</button>
-        </form>
+        <div>
+            <a class="toolbar-link" th:href="@{/assets-ui/decommissions}">Pending decommission requests</a>
+            <form th:action="@{/auth/logout}" method="post" style="margin:0; display:inline;">
+                <button class="logout" type="submit"
+                        style="background:none;border:none;cursor:pointer;">Logout</button>
+            </form>
+        </div>
     </header>
+
+    <div class="flash flash-success" th:if="${message}" th:text="${message}"></div>
+    <div class="flash flash-error" th:if="${error}" th:text="${error}"></div>
 
     <div class="panel">
         <h2>Register a new asset</h2>
@@ -91,7 +107,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="asset : ${assets}" th:attr="data-id=${asset.id}">
+                <tr th:each="asset : ${assets}" th:attr="data-id=${asset.id}"
+                    th:classappend="${pendingAssetIds != null and pendingAssetIds.contains(asset.id)} ? 'row-pending' : ''">
                     <td th:text="${asset.id}">1</td>
                     <td class="cell-name" th:text="${asset.name}">Name</td>
                     <td class="cell-type" th:text="${asset.type}">Type</td>
@@ -101,8 +118,24 @@
                                 th:attr="onclick=|toggleEdit(${asset.id})|">Edit</button>
                         <button type="button" class="btn-save" style="display:none;"
                                 th:attr="onclick=|saveEdit(${asset.id})|">Save</button>
-                        <a class="btn-delete" th:href="@{'/assets-ui/delete/' + ${asset.id}}"
-                           onclick="return confirm('Delete this asset?');">Delete</a>
+
+                        <!-- Pending decommission: show a badge, no second request allowed (FA-07) -->
+                        <span class="badge-pending"
+                              th:if="${pendingAssetIds != null and pendingAssetIds.contains(asset.id)}">
+                            Pending decommission
+                        </span>
+
+                        <!-- Otherwise: Request Decommission with a required reason (UI-01/02, FA-02) -->
+                        <form th:unless="${pendingAssetIds != null and pendingAssetIds.contains(asset.id)}"
+                              th:action="@{'/assets-ui/' + ${asset.id} + '/request-decommission'}"
+                              method="post" style="display:inline;">
+                            <input class="reason-input" type="text" name="reason"
+                                   placeholder="Reason" required/>
+                            <button type="submit" class="btn-decommission"
+                                    onclick="return confirm('Create a decommission request for this asset?');">
+                                Request Decommission
+                            </button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
