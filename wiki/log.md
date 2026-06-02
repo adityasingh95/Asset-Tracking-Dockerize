@@ -79,3 +79,8 @@ Full sweep below — all wiki claims reconciled against code; no drift. Engageme
 Sweep result: all checks OK. (One scripted check string-matched the explanatory comment in
 AssetUIController and looked like drift; manually + live confirmed there is NO delete @GetMapping —
 the route is removed and returns 404. No real drift.)
+
+## [2026-06-02] ingest | Evidence package — requirements-traceability.md, test-run.log, screenshots/.
+Added a requirement→evidence matrix covering G-1..9, EB, FA, V, UI, DOCK, T, C/N IDs (all ✅),
+a captured green test run (19/19), and screenshots of the live app (login, dashboard+badge,
+approver+history). Reproduction steps included.
