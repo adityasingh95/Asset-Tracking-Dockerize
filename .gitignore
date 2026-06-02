@@ -4,3 +4,8 @@ target/
 .env
 *.log
 .DS_Store
+
+# local verification artifacts (not committed)
+app.jar
+Dockerfile.verify
+docker-compose.verify.yml
