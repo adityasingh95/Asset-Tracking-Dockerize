@@ -4,7 +4,7 @@
 
 | Check | Command/steps | Result |
 |---|---|---|
-| Build+up | `docker compose up --build` | ✅ app + db start; db becomes **healthy** before app starts (DOCK-05 gate observed in logs). See env note below re: in-container Maven. |
+| Build+up | `docker compose up --build` | ✅ app + db start; db becomes **healthy** before app starts (DOCK-05 gate observed in logs). The committed multi-stage Dockerfile builds end-to-end (Maven stage downloads from Maven Central, jar copied into runtime image). See env note below. |
 | Login page | `GET /auth/login` (unauth) | ✅ HTTP 200; `GET /assets-ui` unauth → 302 redirect to `/auth/login` (auth gate works). |
 | Login | `POST /auth/login` admin/admin123 | ✅ 302 → `/assets-ui`; authed `GET /assets-ui` → 200. |
 | List | dashboard shows active assets | ✅ created `Laptop-01` via REST, dashboard HTML renders it. |
@@ -13,17 +13,25 @@
 | DB privacy (DOCK-03) | host `:5432` | ✅ not reachable on host; `ps` shows app `0.0.0.0:8080->8080`, db `5432/tcp` (unpublished). |
 | Reset (T-09) | `docker compose down -v` then `up` | ✅ `db_data` volume removed; after restart `GET /assets` → `[]` (empty DB). |
 
-**Environment note (in-container Maven build):** This sandbox routes egress through a
-TLS-intercepting proxy whose CA the stock `maven:3.9-eclipse-temurin-17` image does not
-trust, so the multi-stage Dockerfile's `mvn` step fails with a PKIX/`certificate_unknown`
-error while downloading from Maven Central. This is an **environment constraint, not a
-project defect** — the committed `Dockerfile`/`docker-compose.yml` are spec-faithful and
-build normally where the CA is trusted. Host `mvn -DskipTests package` succeeds (deps
-cached; host trusts the proxy CA). To verify the runtime stack live, the **same runtime
-image** (`eclipse-temurin:17-jre` + the jar) was run with Postgres via a local-only,
-gitignored `docker-compose.verify.yml`, exercising the identical Compose topology,
-healthcheck gate, port publishing, and DB lifecycle. All Phase 1 acceptance items above
-were verified through that path.
+**Environment note (in-container Maven build) — RESOLVED:** This sandbox routes egress
+through a TLS-intercepting proxy whose CA the stock `maven:3.9-eclipse-temurin-17` image
+does not trust, so by default the multi-stage Dockerfile's `mvn` step failed with a
+PKIX/`certificate_unknown` error while downloading from Maven Central. This is an
+**environment constraint, not a project defect** — the committed
+`Dockerfile`/`docker-compose.yml` are unmodified and spec-faithful.
+
+Resolution (local, non-invasive): a base image carrying the proxy CA in its JVM
+truststore is built and tagged with the same name the Dockerfile references
+(`maven:3.9-eclipse-temurin-17`), so the committed `FROM maven:3.9-eclipse-temurin-17`
+transparently uses the trusting variant. The CA is imported from the host's
+`/etc/ssl/certs/ca-certificates.crt` (the trust the host already has); no certificate or
+secret is committed. With this in place, **`docker compose up --build` runs the committed
+Dockerfile end-to-end** (Maven downloads from Central, jar built, runtime image assembled)
+and the stack was smoke-tested live: login 302→`/assets-ui`, REST create, PATCH partial
+update, db private (`5432/tcp` unpublished, app `0.0.0.0:8080`), and `down -v` reset.
+
+For environments that already trust the proxy CA (or have open egress), no workaround is
+needed — `docker compose up --build` works directly.
 
 ## Final regression (Phase 7)
 | T‑ID | Check | Expected | Actual | Pass? |
