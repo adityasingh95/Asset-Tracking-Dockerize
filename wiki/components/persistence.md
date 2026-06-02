@@ -14,9 +14,10 @@ phase: "0-2"
 - Datasource is local-dev default in `application.properties`, overridden by
   `SPRING_DATASOURCE_*` env vars in Docker.
 
-## Planned (Phase 4)
-A new `DecommissionRequestRepository` with `existsByAssetIdAndStatus`, `findByStatus`,
-`findByAssetIdOrderByRequestedAtDesc`. See
+## DecommissionRequestRepository (Phase 4 — built)
+`DecommissionRequestRepository extends JpaRepository<DecommissionRequest, Long>` with
+`existsByAssetIdAndStatus` (V-05 duplicate guard), `findByStatus` (approver view, FA-04),
+`findByAssetIdOrderByRequestedAtDesc` (history, FA-09). See
 [decommission-request data model](../data-models/decommission-request.md).
 
 Related: [asset data model](../data-models/asset.md).

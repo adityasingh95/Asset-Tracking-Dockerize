@@ -36,7 +36,7 @@ Catalog of all pages. `status`: current / draft / planned / proposed / supersede
 | [security-config](components/security-config.md) | filter chain, CSRF off, single user | current |
 | [persistence](components/persistence.md) | JPA repository + ddl-auto | current |
 | [docker-compose-stack](components/docker-compose-stack.md) | Dockerfile + compose | current |
-| [decommission-service](components/decommission-service.md) | request/approve/reject logic | planned |
+| [decommission-service](components/decommission-service.md) | request/approve/reject logic | current |
 
 ## APIs
 | Page | Summary | Status |
@@ -49,7 +49,7 @@ Catalog of all pages. `status`: current / draft / planned / proposed / supersede
 | Page | Summary | Status |
 |---|---|---|
 | [asset](data-models/asset.md) | `assets` + soft-delete | current |
-| [decommission-request](data-models/decommission-request.md) | `decommission_requests` + audit | planned |
+| [decommission-request](data-models/decommission-request.md) | `decommission_requests` + audit | current |
 
 ## Decisions (ADRs)
 | Page | Summary | Status |

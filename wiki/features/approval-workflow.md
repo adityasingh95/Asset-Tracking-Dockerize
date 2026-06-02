@@ -31,6 +31,7 @@ An approver views pending requests and decides each one, with a full audit trail
 ```
 
 ## Status
+- **Service layer landed in Phase 4** (DecommissionService, N-01..N-07 green); user-facing UI wiring is Phase 5.
 Not yet implemented. Service `approve`/`reject` in Phase 4; approver UI in Phase 5;
 history in Phase 6.
 

@@ -20,6 +20,7 @@ soft-deleted at this point and shows a pending badge.
 - UI-01/02 — the dashboard *Delete* control becomes *Request Decommission* with a reason input.
 
 ## Status
+- **Service layer landed in Phase 4** (DecommissionService, N-01..N-07 green); user-facing UI wiring is Phase 5.
 Not yet implemented. Service guards land in Phase 4; UI wiring in Phase 5.
 
 Related: [approval-workflow](approval-workflow.md) · [decommission-service](../components/decommission-service.md) ·

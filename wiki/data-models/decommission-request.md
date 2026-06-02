@@ -1,17 +1,18 @@
 ---
-title: "Data Model: DecommissionRequest (planned)"
-status: planned
+title: "Data Model: DecommissionRequest"
+status: current
 last_updated: 2026-06-02
-sources: [docs/04-data-model-spec.md, docs/03-change-spec.md]
+sources: [src/main/java/com/nesa/interview/assettracking/model/DecommissionRequest.java, docs/04-data-model-spec.md, artifacts/implementation-notes.md]
 phase: 4
 ---
 
-# Data Model: `DecommissionRequest` (planned — Phase 4)
+# Data Model: `DecommissionRequest`
 
-New entity, table `decommission_requests`. Created by `ddl-auto=update` on startup
-(DDL to be pasted into `implementation-notes.md` once built).
+New entity, table `decommission_requests`, created by `ddl-auto=update` on startup
+(generated DDL captured in [implementation-notes](../../artifacts/implementation-notes.md)).
+Built in Phase 4; covered by tests N-01..N-07.
 
-## Intended shape (docs/04 §1)
+## Shape (as built — docs/04 §1)
 | Field | Type | Notes |
 |---|---|---|
 | `id` | `Long` | `@Id @GeneratedValue(IDENTITY)` |

@@ -34,3 +34,15 @@ AssetUIController, AssetController). Updated index + overview phase tracker.
 ## [2026-06-02] lint | Phase 3 code-drift check.
 No new code yet (impact map only). Planned pages still correctly flagged planned; ADR-004 moved
 proposed→current with the recorded decision. Links clean.
+
+## [2026-06-02] ingest | Phase 4 (data & service) — DecommissionRequest, DecommissionStatus, repository, DecommissionService, artifacts/implementation-notes.md.
+Flipped decommission-request (data model) and decommission-service (component) planned→current.
+Updated persistence (repository built), index, overview tracker. Captured generated DDL for
+decommission_requests in implementation-notes. Asset entity unchanged.
+
+## [2026-06-02] lint | Phase 4 code-drift check.
+Verified: entity fields ↔ DecommissionRequest.java (id, assetId, status, reason, requestedBy/At,
+decidedBy/At, decisionComment) — match. Service API ↔ DecommissionService.java (request/approve/
+reject/pendingRequests/historyForAsset) — match. Repository finders ↔ code — match. Generated DDL
+matches the entity. Tests: 13 green (C-01..05, N-01..07). features/{request-decommission,
+approval-workflow} correctly still 'planned' (UI not wired). Links clean.
