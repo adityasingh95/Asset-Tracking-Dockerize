@@ -33,29 +33,64 @@ update, db private (`5432/tcp` unpublished, app `0.0.0.0:8080`), and `down -v` r
 For environments that already trust the proxy CA (or have open egress), no workaround is
 needed — `docker compose up --build` works directly.
 
-## Final regression (Phase 7)
+## Final regression (Phase 7) — run live in Docker, 2026-06-02
+
+Run against the **committed** `docker compose up --build` (real multi-stage build), driving the
+app over HTTP. Sequential scenario so each decision has exactly one pending request.
+
 | T‑ID | Check | Expected | Actual | Pass? |
 |---|---|---|---|---|
-| T‑01 | docker up --build | app+db start | | |
-| T‑02 | login | admin logs in | | |
-| T‑03 | create asset | appears | | |
-| T‑04 | update asset | PATCH unbroken | | |
-| T‑05 | request decommission | pending; not deleted | | |
-| T‑06 | reject | rejected; active | | |
-| T‑07 | approve | approved; soft‑deleted | | |
-| T‑08 | duplicate prevention | blocked | | |
-| T‑09 | db reset | cleared | | |
+| T‑01 | `docker compose up --build` | app+db start | Real build (Maven→jar→runtime); db **healthy** before app starts; only `8080` published, `5432/tcp` private | ✅ |
+| T‑02 | login | admin logs in | `POST /auth/login` → 302 `/assets-ui`; unauth `/assets-ui` → login | ✅ |
+| T‑03 | create asset | appears | `POST /assets` → asset rendered on dashboard | ✅ |
+| T‑04 | update asset | PATCH unbroken | `PATCH /assets/{id}` changed only `status`; name/type intact | ✅ |
+| T‑05 | request decommission | pending; not deleted | `POST .../request-decommission` → 302; asset **still active**; pending badge shown | ✅ |
+| T‑06 | reject | rejected; active | reject → 302; asset **remains active**; request `REJECTED` | ✅ |
+| T‑07 | approve | approved; soft‑deleted | approve → 302; asset **absent from active list** (soft‑deleted); request `APPROVED` | ✅ |
+| T‑08 | duplicate prevention | blocked | 2nd request on a pending asset → no new row (still 1 pending) + error flash | ✅ |
+| T‑09 | db reset | cleared | `down -v` removed `db_data`; after `up`, `GET /assets` → `[]` | ✅ |
+
+Extra (FA‑09): the approver view's **Decision history** showed the approved (now soft‑deleted)
+asset by name, with `APPROVED` and `REJECTED` badges. The retired REST `DELETE /assets/{id}`
+returns **405** (no soft‑delete); the old UI `GET /assets-ui/delete/{id}` returns **404**.
 
 ## Characterization re‑run (no regressions)
-- C‑01..C‑05 still green? (yes/no + evidence)
+- **C‑01..C‑05 green**, alongside N‑01..N‑08 and the Phase‑6 checks. Full suite (`mvn test`):
+  **`Tests run: 19, Failures: 0, Errors: 0`** (Testcontainers PostgreSQL). The pre‑change safety
+  net never went red.
 
-## Before / after demo
-- Scenario: "decommission asset X"
-- Before: immediate soft‑delete (vanishes, no record)
-- After: request → (approve|reject) → outcome + audit
+## Before / after demo (same "decommission asset X" scenario)
+- **Before (baseline):** clicking *Delete* hit `GET /assets-ui/delete/{id}` → `deleteById` →
+  `@SQLDelete` set `is_deleted=true` **immediately**. Asset vanished. No reason, no approver, no
+  record of who/why.
+- **After (this change):** the control is *Request Decommission* and requires a **reason** →
+  creates a `PENDING` `DecommissionRequest`; the asset stays active with a **pending badge**. An
+  approver opens `/assets-ui/decommissions` and **approves** (executes the *same* soft‑delete and
+  records `decidedBy`/`decidedAt`/comment, status `APPROVED`) or **rejects** (asset stays active,
+  status `REJECTED`). Every request/decision is **audited** and visible in Decision history,
+  including for approved (now soft‑deleted) assets. Duplicate/soft‑deleted requests are blocked.
 
-## Success criteria
-- G‑1..G‑9: (tick each)
+## Success criteria — G‑1..G‑9
+- **G‑1** ✅ Clean clone + `docker compose up --build` starts app+db; only the app port published; Postgres private.
+- **G‑2** ✅ App connects to the Compose Postgres via `SPRING_DATASOURCE_*` env vars (no host install).
+- **G‑3** ✅ Login, list, add, update/PATCH all work after Dockerization and after the change (T‑02..T‑04; C‑03..C‑05).
+- **G‑4** ✅ Request creates a `PENDING` request and does **not** soft‑delete; empty reason rejected (T‑05; N‑01/N‑02).
+- **G‑5** ✅ Reject leaves the asset active/visible; request `REJECTED` with decision metadata (T‑06; N‑04).
+- **G‑6** ✅ Approve performs the existing soft‑delete; asset disappears from active views; request `APPROVED` with metadata (T‑07; N‑03).
+- **G‑7** ✅ No second `PENDING` for an asset that has one; none for an already‑decommissioned asset (T‑08; N‑05/N‑06).
+- **G‑8** ✅ `docker compose down -v` fully resets the study DB (T‑09).
+- **G‑9** ✅ The six evidence artifacts exist, are current, and tell a coherent before/after story.
 
-## Known limitations
-- …
+## Known limitations (by design / scope)
+- **No RBAC / single user.** Security is one in‑memory `admin` with no roles, so an "approver‑only"
+  screen cannot be enforced; approval = any authenticated user, and self‑approval is possible.
+  Documented, not built (out of scope). Identity is captured from `Authentication#getName()`.
+- **CSRF disabled** (pre‑existing). New POST forms rely on this; not re‑enabled (would be an
+  unrelated breaking change).
+- **Schema via `ddl-auto=update`** (no Flyway/Liquibase). Generated `decommission_requests` DDL is
+  recorded in `implementation-notes.md`.
+- **Reconstructed baseline.** The original source was unreachable; the as‑is app was rebuilt from
+  `docs/02` (ADR‑007). Behaviour matches the spec's account; reconcile if the original surfaces.
+- **Sandbox build note.** In this environment the in‑container Maven step needs the proxy CA
+  trusted (handled via a locally‑tagged CA‑trusting base image; committed files unchanged). On a
+  normal network `docker compose up --build` works directly.

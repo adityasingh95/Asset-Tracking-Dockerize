@@ -68,3 +68,14 @@ asset-rest-controller, assets-rest-api, decommission-routes pages + overview tra
 ## [2026-06-02] lint | Phase 6 code-drift check.
 DELETE handler ↔ AssetController.java returns 405 (no repo call) — match. History finder + native
 summary query ↔ code — match. Tests: 19 green (C-01..05, N-01..08, REST-405, history-FA09). Links clean.
+
+## [2026-06-02] ingest | Phase 7 (regression & write-up) — artifacts/regression-result.md.
+Ran T-01..T-09 live against the committed docker compose up --build: all pass. Recorded before/after
+demo and G-1..G-9 (all met). Finalized regression-result + all six artifacts. Overview marked
+engagement complete.
+
+## [2026-06-02] lint | Phase 7 final code-drift check.
+Full sweep below — all wiki claims reconciled against code; no drift. Engagement coherent.
+Sweep result: all checks OK. (One scripted check string-matched the explanatory comment in
+AssetUIController and looked like drift; manually + live confirmed there is NO delete @GetMapping —
+the route is removed and returns 404. No real drift.)

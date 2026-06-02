@@ -3,7 +3,7 @@ title: Product Overview
 status: current
 last_updated: 2026-06-02
 sources: [docs/01-overview-and-goals.md, docs/03-change-spec.md, CLAUDE.md, artifacts/repo-map.md]
-phase: "0-2"
+phase: "0-7"
 ---
 
 # Asset Tracking System — Decommission Approval
@@ -30,6 +30,9 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 - **Characterize before you change** — behaviour locked as passing tests before edits.
 
 ## Current state (phase tracker)
+
+**Engagement complete** — all phases done; T-01..T-09 pass live in Docker; full test suite (19) green; G-1..G-9 met. See [regression-result](../artifacts/regression-result.md).
+
 | Phase | Title | Status |
 |---|---|---|
 | 0 | Archaeology & baseline doc | ✅ done |
@@ -39,7 +42,7 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 | 4 | Data & service layer | ✅ done (N-01..N-07 green) |
 | 5 | UI wiring | ✅ done (N-08 green; live-verified) |
 | 6 | History & loose ends | ✅ done |
-| 7 | Regression & write-up | ▶ next |
+| 7 | Regression & write-up | ✅ done (T-01..T-09 pass; G-1..G-9 met) |
 
 > Provenance note: the original source repo (`faizal08/asset-tracking-system`) was
 > unreachable, so the baseline was **reconstructed** faithfully from `docs/02`.
