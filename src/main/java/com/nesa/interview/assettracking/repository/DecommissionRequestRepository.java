@@ -18,4 +18,7 @@ public interface DecommissionRequestRepository extends JpaRepository<Decommissio
 
     /** History for one asset, most recent first. FA-09. */
     List<DecommissionRequest> findByAssetIdOrderByRequestedAtDesc(Long assetId);
+
+    /** Decided requests (APPROVED/REJECTED), most recently decided first — the history view. FA-09. */
+    List<DecommissionRequest> findByStatusNotOrderByDecidedAtDesc(DecommissionStatus status);
 }

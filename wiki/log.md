@@ -58,3 +58,13 @@ Routes ↔ DecommissionUIController.java (request/approve/reject/list) — match
 MockMvc (n08 + approverView). Live smoke (jar+postgres): request→302+badge, blank reason rejected,
 duplicate blocked with flash, approver view lists reason, approve→asset soft-deleted, old delete
 route → 404. Tests: 17 green (C-01..05, N-01..08). Links clean.
+
+## [2026-06-02] ingest | Phase 6 (history & loose ends) — AssetController, AssetRepository, DecommissionService, decommissions.html, artifacts/implementation-notes.md.
+Neutralized REST DELETE /assets/{id} → 405 (ADR-004 fully realized; no ungated soft-delete path
+remains). Added decision-history table to the approver view; asset names for approved/soft-deleted
+assets resolved via native findSummariesIncludingDeleted (bypasses @SQLRestriction). Updated
+asset-rest-controller, assets-rest-api, decommission-routes pages + overview tracker.
+
+## [2026-06-02] lint | Phase 6 code-drift check.
+DELETE handler ↔ AssetController.java returns 405 (no repo call) — match. History finder + native
+summary query ↔ code — match. Tests: 19 green (C-01..05, N-01..08, REST-405, history-FA09). Links clean.

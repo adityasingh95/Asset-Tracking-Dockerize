@@ -1,6 +1,5 @@
 package com.nesa.interview.assettracking.controller;
 
-import com.nesa.interview.assettracking.model.Asset;
 import com.nesa.interview.assettracking.model.DecommissionRequest;
 import com.nesa.interview.assettracking.repository.AssetRepository;
 import com.nesa.interview.assettracking.service.DecommissionService;
@@ -13,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * UI for the decommission-approval workflow: requesting decommission from the dashboard,
@@ -51,16 +52,29 @@ public class DecommissionUIController {
         return "redirect:/assets-ui";
     }
 
-    /** Approver view: all pending requests with their asset details (UI-04, FA-04). */
+    /**
+     * Approver view: pending requests to act on (UI-04, FA-04) plus the decision history
+     * (FA-09). Asset labels are resolved including soft-deleted assets so approved requests
+     * still show the asset they retired.
+     */
     @GetMapping("/assets-ui/decommissions")
     public String pending(Model model) {
         List<DecommissionRequest> pending = decommissionService.pendingRequests();
-        Map<Long, Asset> assetsById = new LinkedHashMap<>();
-        for (DecommissionRequest req : pending) {
-            assetRepository.findById(req.getAssetId())
-                    .ifPresent(a -> assetsById.put(req.getAssetId(), a));
+        List<DecommissionRequest> history = decommissionService.decisionHistory();
+
+        // Resolve asset name/type for every referenced asset, including soft-deleted ones (FA-09).
+        Set<Long> assetIds = new LinkedHashSet<>();
+        pending.forEach(r -> assetIds.add(r.getAssetId()));
+        history.forEach(r -> assetIds.add(r.getAssetId()));
+        Map<Long, AssetRepository.AssetSummary> assetsById = new HashMap<>();
+        if (!assetIds.isEmpty()) {
+            for (AssetRepository.AssetSummary s : assetRepository.findSummariesIncludingDeleted(assetIds)) {
+                assetsById.put(s.getId(), s);
+            }
         }
+
         model.addAttribute("pending", pending);
+        model.addAttribute("history", history);
         model.addAttribute("assetsById", assetsById);
         return "decommissions";
     }

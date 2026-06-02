@@ -17,6 +17,9 @@ Routes as built (Phase 5):
 | POST | `/assets-ui/decommissions/{requestId}/approve` | approve → soft-delete asset + APPROVED (+optional `comment`) |
 | POST | `/assets-ui/decommissions/{requestId}/reject` | reject → REJECTED, asset untouched (+`comment`) |
 
+The approver view also renders a **Decision history** table (APPROVED/REJECTED), with asset
+names resolved including soft-deleted assets (FA-09).
+
 
 CSRF is disabled, so these POST forms need no token. Component:
 [decommission-service](../components/decommission-service.md) · [decommission-ui-controller](../components/decommission-ui-controller.md). Features:

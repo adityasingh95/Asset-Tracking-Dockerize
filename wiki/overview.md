@@ -38,8 +38,8 @@ the *existing* soft-delete) or **reject** (asset untouched), with a full audit t
 | 3 | Impact map | ✅ done |
 | 4 | Data & service layer | ✅ done (N-01..N-07 green) |
 | 5 | UI wiring | ✅ done (N-08 green; live-verified) |
-| 6 | History & loose ends | ▶ next |
-| 7 | Regression & write-up | ⏳ |
+| 6 | History & loose ends | ✅ done |
+| 7 | Regression & write-up | ▶ next |
 
 > Provenance note: the original source repo (`faizal08/asset-tracking-system`) was
 > unreachable, so the baseline was **reconstructed** faithfully from `docs/02`.

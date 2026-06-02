@@ -30,6 +30,10 @@
         .flash-error { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6cb; }
         .empty { color: #666; font-style: italic; }
         .muted { color: #888; font-size: 12px; }
+        h2 { font-size: 18px; margin: 28px 0 12px; color: #fff; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
+        .status-APPROVED { background: #2e7d32; }
+        .status-REJECTED { background: #c62828; }
     </style>
 </head>
 <body>
@@ -79,6 +83,41 @@
                             <button type="submit" class="btn btn-reject">Reject</button>
                         </form>
                     </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Decision history</h2>
+    <div class="panel">
+        <p class="empty" th:if="${#lists.isEmpty(history)}">No decisions recorded yet.</p>
+        <table th:unless="${#lists.isEmpty(history)}">
+            <thead>
+                <tr>
+                    <th>Req #</th>
+                    <th>Asset</th>
+                    <th>Type</th>
+                    <th>Outcome</th>
+                    <th>Requested by</th>
+                    <th>Reason</th>
+                    <th>Decided by</th>
+                    <th>Decided at</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- History includes approved (now soft-deleted) assets; names resolved via an
+                     unrestricted lookup so they remain visible (FA-09). -->
+                <tr th:each="req : ${history}">
+                    <td th:text="${req.id}">1</td>
+                    <td th:text="${assetsById.containsKey(req.assetId)} ? ${assetsById.get(req.assetId).name} : ('#' + ${req.assetId})">Asset</td>
+                    <td th:text="${assetsById.containsKey(req.assetId)} ? ${assetsById.get(req.assetId).type} : '—'">Type</td>
+                    <td><span th:class="'status-badge status-' + ${req.status}" th:text="${req.status}">STATUS</span></td>
+                    <td th:text="${req.requestedBy}">admin</td>
+                    <td th:text="${req.reason}">reason</td>
+                    <td th:text="${req.decidedBy}">approver</td>
+                    <td class="muted" th:text="${req.decidedAt}">time</td>
+                    <td th:text="${req.decisionComment}">comment</td>
                 </tr>
             </tbody>
         </table>

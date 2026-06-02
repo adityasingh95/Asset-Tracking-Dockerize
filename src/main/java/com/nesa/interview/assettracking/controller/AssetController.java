@@ -2,6 +2,7 @@ package com.nesa.interview.assettracking.controller;
 
 import com.nesa.interview.assettracking.model.Asset;
 import com.nesa.interview.assettracking.repository.AssetRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,12 +61,16 @@ public class AssetController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Direct deletion is disabled (ADR-004). Decommissioning an asset must go through the
+     * decommission-approval flow, so this previously-ungated soft-delete path now returns
+     * 405 instead of mutating data. The endpoint is kept (not removed) to preserve the URL
+     * contract for any external caller.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
-        if (!assetRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        assetRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteAsset(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body("Direct deletion is disabled. Request decommission via "
+                        + "POST /assets-ui/{id}/request-decommission and have it approved.");
     }
 }

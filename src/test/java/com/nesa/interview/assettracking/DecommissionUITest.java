@@ -5,6 +5,7 @@ import com.nesa.interview.assettracking.model.DecommissionRequest;
 import com.nesa.interview.assettracking.model.DecommissionStatus;
 import com.nesa.interview.assettracking.repository.AssetRepository;
 import com.nesa.interview.assettracking.repository.DecommissionRequestRepository;
+import com.nesa.interview.assettracking.service.DecommissionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,6 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -28,6 +30,7 @@ class DecommissionUITest extends AbstractPostgresTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private AssetRepository assetRepository;
     @Autowired private DecommissionRequestRepository requestRepository;
+    @Autowired private DecommissionService decommissionService;
 
     private Asset newAsset(String name) {
         Asset a = new Asset();
@@ -100,5 +103,34 @@ class DecommissionUITest extends AbstractPostgresTest {
     void approverView_loads() throws Exception {
         mockMvc.perform(get("/assets-ui/decommissions"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "admin")
+    void restDelete_isDisabled_returns405_andDoesNotSoftDelete() throws Exception {
+        Asset asset = newAsset("NoRestDelete");
+
+        mockMvc.perform(delete("/assets/" + asset.getId()))
+                .andExpect(status().isMethodNotAllowed());
+
+        // Still active — the ungated REST delete path no longer soft-deletes (ADR-004).
+        assertThat(assetRepository.findById(asset.getId())).isPresent();
+    }
+
+    @Test
+    @WithMockUser(username = "admin")
+    void decisionHistory_showsApprovedRequest_forSoftDeletedAsset() throws Exception {
+        Asset asset = newAsset("HistAsset");
+        DecommissionRequest req = decommissionService.request(asset.getId(), "retire", "alice");
+        decommissionService.approve(req.getId(), "bob", "approved");   // asset now soft-deleted
+
+        String html = mockMvc.perform(get("/assets-ui/decommissions"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        // FA-09: the approved (now soft-deleted) asset's name is still shown in history.
+        assertThat(html).contains("Decision history");
+        assertThat(html).contains("HistAsset");
+        assertThat(html).contains("APPROVED");
     }
 }

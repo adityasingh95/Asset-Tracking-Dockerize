@@ -105,6 +105,12 @@ public class DecommissionService {
         return requestRepository.findByAssetIdOrderByRequestedAtDesc(assetId);
     }
 
+    /** All decided (APPROVED/REJECTED) requests, most recently decided first (FA-09). */
+    @Transactional(readOnly = true)
+    public List<DecommissionRequest> decisionHistory() {
+        return requestRepository.findByStatusNotOrderByDecidedAtDesc(DecommissionStatus.PENDING);
+    }
+
     private DecommissionRequest loadPending(Long requestId) {
         DecommissionRequest req = requestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request " + requestId + " not found."));

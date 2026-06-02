@@ -16,7 +16,7 @@ JSON API over `AssetRepository`.
 | POST | `/assets` | Create from JSON body. |
 | GET | `/assets/{id}` | Fetch by id (404 if absent/soft-deleted). |
 | PATCH | `/assets/{id}` | **Partial update** of `name`/`type`/`status` from a JSON map. Drives dashboard inline edit. Regression-critical (C-03). |
-| DELETE | `/assets/{id}` | REST soft-delete — **second delete path**. Unused by UI. Fate decided in Phase 3. → [ADR-004](../decisions/ADR-004-rest-delete-fate.md) |
+| DELETE | `/assets/{id}` | **Neutralized (Phase 6): returns 405**, no longer soft-deletes (ADR-004). Kept for URL contract. |
 
 Depends on [persistence](persistence.md). Related: [assets-rest-api](../apis/assets-rest-api.md) ·
 [asset-crud feature](../features/asset-crud.md).

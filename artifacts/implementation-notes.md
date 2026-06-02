@@ -67,6 +67,15 @@ change to `Asset`).
 - CSRF disabled (pre-existing); new POST forms (Phase 5) rely on this.
 - Schema via `ddl-auto=update` (no Flyway/Liquibase migration tool — optional, not added).
 
-## Phase 6 follow-ups (planned)
-- Neutralize REST `DELETE /assets/{id}` → 405 (ADR-004) and retire the UI delete route.
-- Surface history (FA-09) including for approved/soft-deleted assets.
+## Phase 6 (done)
+- **REST `DELETE /assets/{id}` neutralized → 405** (ADR-004). The handler no longer touches the
+  repository; it returns `405 Method Not Allowed` with a message pointing at the request flow.
+  The endpoint is kept (URL contract) but is no longer a soft-delete bypass. Verified by test
+  `restDelete_isDisabled_returns405_andDoesNotSoftDelete`. (The UI `GET /assets-ui/delete/{id}`
+  route was already removed in Phase 5.) Net: **no ungated path to soft-delete remains.**
+- **History surfaced (FA-09).** The approver view (`/assets-ui/decommissions`) now shows a
+  "Decision history" table of APPROVED/REJECTED requests. Asset name/type for approved (now
+  soft-deleted) assets is resolved via `AssetRepository.findSummariesIncludingDeleted` — a
+  **native** query that bypasses `@SQLRestriction` (an entity-level filter not applied to native
+  SQL), so retired assets remain visible in history. Verified by
+  `decisionHistory_showsApprovedRequest_forSoftDeletedAsset`. No new column on `Asset`.
